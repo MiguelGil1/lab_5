@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PATH_WORLD "../lab_5/worlds/world.txt"
-#define PATH_IMG "../lab_5/images/world.txt"
+#define PATH_IMG "../lab_5/images/ladrillo.PNG"
 #define tam 25
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,22 +16,23 @@ MainWindow::MainWindow(QWidget *parent)
     int positionY = 0;
 
     QImage im(PATH_IMG);
-    QColor color1("#2244aa");
+    QColor color1(187,187,187);
+    QColor color2(255,0,0);
     QBrush Brush1(color1);
-    QPen pen1(Qt::blue, 3, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin);
-
+    QBrush Brush2(im);
+    QBrush Brush3(color2);
+    QPen pen1(Qt::black, 3, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin);
+    scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
     for(int rows = 0; rows < 13; rows++){
         positionX = 0;
         for(int columns = 0; columns < 31; columns++){
-            if(world[rows][columns] != 0){
+            if(world[rows][columns] == 1){
+                //Se agregan cuadrados de hierro
                 scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
+            }else if(world[rows][columns] == 2){
+                scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
             }
             positionX += tam;
-            /*if(world[rows][columns] == 1){
-                //Se agregan cuadrados de hierro
-            }else if(world[rows][columns] == 2){
-                //Se agregan ladrillos
-            }*/
         }
         positionY += tam;
     }

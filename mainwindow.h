@@ -5,6 +5,10 @@
 #include <QGraphicsScene>
 #include <vector>
 #include <QGraphicsRectItem>
+#include <fstream>
+#include <iostream>
+
+using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,9 +20,12 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void readWorld();
     ~MainWindow();
 
 private:
+    QGraphicsScene *scene;
     Ui::MainWindow *ui;
+    int world[13][31];
 };
 #endif // MAINWINDOW_H

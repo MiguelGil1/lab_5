@@ -4,7 +4,6 @@
 #define PATH_WORLD "../lab_5/worlds/world.txt"
 #define PATH_IMG "../lab_5/images/ladrillo.PNG"
 #define tam 30
-int Time = 300;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -29,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer, SIGNAL(timeout()), this, SLOT(OnTimeOut()));
     timer->start(1000);
     ui->time->display(Time);
+    ui->lives->display(Lives);
+
 
     scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
 
@@ -69,10 +70,25 @@ void MainWindow::readWorld(){
     //investigar SetSceneRect(4parametros);
 }
 
+void MainWindow::loseLife(){
+    if(Lives != 0){
+        Lives -= 1;
+        Time = 300;
+        ui->lives->display(Lives);
+        ui->time->display(Time);
+    }else{
+        scene->clear();
+        scene->addText("Game Over!");
+    }
+}
+
 void MainWindow::OnTimeOut(){
-    //static int cont = 1;
     Time -= 1;
-    ui->time->display(Time);
+    if(Time < 0){
+        loseLife();
+    }else{
+      ui->time->display(Time);
+    }
 }
 
 MainWindow::~MainWindow(){

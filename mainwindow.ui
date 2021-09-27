@@ -61,7 +61,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLCDNumber" name="left"/>
+      <widget class="QLCDNumber" name="lives"/>
      </item>
     </layout>
    </widget>

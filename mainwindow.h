@@ -21,7 +21,8 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    void readWorld();  
+    void readWorld();
+    void loseLife();
     ~MainWindow();
 public slots:
     void  OnTimeOut();
@@ -30,5 +31,7 @@ private:
     QTimer *timer;
     Ui::MainWindow *ui;
     int world[13][31];
+    int Lives = 3;
+    int Time = 300;
 };
 #endif // MAINWINDOW_H

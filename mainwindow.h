@@ -7,6 +7,7 @@
 #include <QGraphicsRectItem>
 #include <fstream>
 #include <iostream>
+#include <QTimer>
 
 using namespace std;
 
@@ -20,11 +21,13 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    void readWorld();
+    void readWorld();  
     ~MainWindow();
-
+public slots:
+    void  OnTimeOut();
 private:
     QGraphicsScene *scene;
+    QTimer *timer;
     Ui::MainWindow *ui;
     int world[13][31];
 };

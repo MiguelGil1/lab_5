@@ -16,22 +16,30 @@ MainWindow::MainWindow(QWidget *parent)
     int positionY = 0;
 
     QImage im(PATH_IMG);
-    QColor color1(187,187,187);
-    QColor color2(255,0,0);
-    QBrush Brush1(color1);
-    QBrush Brush2(im);
-    QBrush Brush3(color2);
+    //Agregando colores
+    Colors.push_back(QColor(187,187,187));
+    Colors.push_back(QColor(255,0,0));
+    //Fin de agregar colores
+
+    //Agregando brochas
+    Brushes.push_back(QBrush(Colors.at(0)));
+    Brushes.push_back(QBrush(im));
+    Brushes.push_back(QBrush(Colors.at(1)));
+    //Fin de agregar brochas
+
     QPen pen1(Qt::black, 3, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin);
 
     //Se inicia el TIMER//
     timer = new QTimer();
+    //Se conecta con el Slot OntimeOut
     connect(timer, SIGNAL(timeout()), this, SLOT(OnTimeOut()));
     timer->start(1000);
     ui->time->display(Time);
     ui->lives->display(Lives);
 
     //Añadiendo el personaje principal al vector de personajes
-    characters.push_back(scene->addEllipse(positionXcharacters,positionYcharacters,tam,tam,pen1,Brush3));
+    characters.push_back(scene->addEllipse(positionXmainCharacter,positionYmainCharacter,tam,tam,pen1,Brushes.at(2)));
+    cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
     //scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
 
     for(int rows = 0; rows < 13; rows++){
@@ -39,10 +47,12 @@ MainWindow::MainWindow(QWidget *parent)
         for(int columns = 0; columns < 31; columns++){
             if(world[rows][columns] == 1){
                 //Se agregan cuadrados de hierro
-                scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
+                worldRect.push_back(scene->addRect(positionX,positionY,tam,tam,pen1,Brushes.at(0)));
+                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
             }else if(world[rows][columns] == 2){
                 //Se agregan los ladrillos
-                scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
+                worldRect.push_back(scene->addRect(positionX,positionY,tam,tam,pen1,Brushes.at(1)));
+                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
             }
             positionX += tam;
         }
@@ -95,34 +105,71 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
+bool MainWindow::detectColision(){
+    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
+    for(auto i = worldRect.begin(); i != worldRect.end(); i++){
+        if(characters.at(0)->collidesWithItem(*i)){
+            cout << "Colision con " << *i << endl;
+            return true;
+        }else{
+            characters.at(0)->setBrush(Brushes.at(2));
+        }
+    }
+    return false;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event){
     switch (event->key()) {
         case Qt::Key_A:{
             //Movimiento a la izquierda
             //Hay movimiento en la direccion en la que decrece el eje X
-            positionXcharacters -= tam;
+            positionXmainCharacter -= tam;
+            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
+            //Se verifica si hay colision
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                positionXmainCharacter += tam;
+            }
             break;
         }
         case Qt::Key_S:{
             //Movimiento abajo
             //Hay moviemiento en el la direccion en la que crece el eje Y
-            positionYcharacters += tam;
-            //qDebug() << "abajo" << Qt::endl;
+            positionYmainCharacter += tam;
+            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
+            //Se verifica si hay colision
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                positionYmainCharacter -= tam;
+            }
             break;
         }
         case Qt::Key_D:{
             //Movimiento a la derecha
             //Hay movimiento en la direccion en la que crece el eje X
-            positionXcharacters += tam;
+            positionXmainCharacter += tam;
+            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
+            //Se verifica si hay colision
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                positionXmainCharacter -= tam;
+            }
             break;
         }
         case Qt::Key_W:{
             //Movimiento arriba
             //Hay movimiento en la direccion en la cual decrece el eje Y
-            positionYcharacters -= tam;
+            positionYmainCharacter -= tam;
+            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
+            //Se verifica si hay colision
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                positionYmainCharacter += tam;
+            }
             break;
         }
     }
-    characters.at(0)->setPos(positionXcharacters,positionYcharacters);
+    cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
+    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
 }
 

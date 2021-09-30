@@ -27,6 +27,7 @@ public:
     void loseLife();   
     ~MainWindow();
 protected:
+    bool detectColision();
     void  keyPressEvent(QKeyEvent *event);
 public slots:
     void  OnTimeOut();
@@ -38,8 +39,12 @@ private:
     int Lives = 3;
     int Time = 300;
     vector <QGraphicsEllipseItem *> characters;
+    vector <QGraphicsRectItem *> worldRect;
+    vector <QColor> Colors;
+    vector <QPen> Pens;
+    vector <QBrush> Brushes;
     int tam = 30;
-    int positionXcharacters = tam;
-    int positionYcharacters = tam;
+    int positionXmainCharacter = tam;
+    int positionYmainCharacter = tam;
 };
 #endif // MAINWINDOW_H

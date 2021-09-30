@@ -37,14 +37,16 @@ private:
     Ui::MainWindow *ui;
     int world[13][31];
     int Lives = 3;
-    int Time = 300;
+    int Time = 300;  
     vector <QGraphicsEllipseItem *> characters;
     vector <QGraphicsRectItem *> worldRect;
     vector <QColor> Colors;
     vector <QPen> Pens;
     vector <QBrush> Brushes;
     int tam = 30;
-    int positionXmainCharacter = tam;
-    int positionYmainCharacter = tam;
+    int movement = 10;
+    int positionXmainCharacter = (tam/2)+5;
+    int positionYmainCharacter = (tam/2)+5;
+    QGraphicsEllipseItem *bomb;
 };
 #endif // MAINWINDOW_H

@@ -84,25 +84,32 @@ void MainWindow::loseLife(){
 }
 
 void MainWindow::KeyPressEvent(QKeyEvent *e){
-    QString texto = "";
-    //e->key devuelve entero, por eso hay que convertirlo a caracter
-    texto += char(e->key());
-    if(texto == "A"){
-        //Movimiento a la izquierda
-        //Hay movimiento en la direccion en la que decrece el eje X
-        positionXcharacters -= tam;
-    }else if(texto == "S"){
-        //Movimiento abajo
-        //Hay moviemiento en el la direccion en la que crece el eje Y
-        positionYcharacters += tam;
-    }else if(texto == "D"){
-        //Movimiento a la derecha
-        //Hay movimiento en la direccion en la que crece el eje X
-        positionXcharacters += tam;
-    }else if(texto == "W"){
-        //Movimiento arriba
-        //Hay movimiento en la direccion en la cual decrece el eje Y
-        positionYcharacters -= tam;
+    switch (e->key()) {
+        case Qt::Key_A:{
+            //Movimiento a la izquierda
+            //Hay movimiento en la direccion en la que decrece el eje X
+            positionXcharacters -= tam;
+            break;
+        }
+        case Qt::Key_S:{
+            //Movimiento abajo
+            //Hay moviemiento en el la direccion en la que crece el eje Y
+            positionYcharacters += tam;
+            //qDebug() << "abajo" << Qt::endl;
+            break;
+        }
+        case Qt::Key_D:{
+            //Movimiento a la derecha
+            //Hay movimiento en la direccion en la que crece el eje X
+            positionXcharacters += tam;
+            break;
+        }
+        case Qt::Key_W:{
+            //Movimiento arriba
+            //Hay movimiento en la direccion en la cual decrece el eje Y
+            positionYcharacters -= tam;
+            break;
+        }
     }
     characters.at(0)->setPos(positionXcharacters,positionYcharacters);
 }
@@ -113,8 +120,6 @@ void MainWindow::OnTimeOut(){
         loseLife();
     }else{
       ui->time->display(Time);
-      positionXcharacters += tam;
-      characters.at(0)->setPos(positionXcharacters,positionYcharacters);
     }
 }
 

@@ -3,7 +3,7 @@
 
 #define PATH_WORLD "../lab_5/worlds/world.txt"
 #define PATH_IMG "../lab_5/images/ladrillo.PNG"
-#define tam 30
+//#define tam 30
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -30,8 +30,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->time->display(Time);
     ui->lives->display(Lives);
 
-
-    scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
+    //Añadiendo el personaje principal al vector de personajes
+    characters.push_back(scene->addEllipse(positionXcharacters,positionYcharacters,tam,tam,pen1,Brush3));
+    //scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
 
     for(int rows = 0; rows < 13; rows++){
         positionX = 0;
@@ -82,12 +83,38 @@ void MainWindow::loseLife(){
     }
 }
 
+void MainWindow::KeyPressEvent(QKeyEvent *e){
+    QString texto = "";
+    //e->key devuelve entero, por eso hay que convertirlo a caracter
+    texto += char(e->key());
+    if(texto == "A"){
+        //Movimiento a la izquierda
+        //Hay movimiento en la direccion en la que decrece el eje X
+        positionXcharacters -= tam;
+    }else if(texto == "S"){
+        //Movimiento abajo
+        //Hay moviemiento en el la direccion en la que crece el eje Y
+        positionYcharacters += tam;
+    }else if(texto == "D"){
+        //Movimiento a la derecha
+        //Hay movimiento en la direccion en la que crece el eje X
+        positionXcharacters += tam;
+    }else if(texto == "W"){
+        //Movimiento arriba
+        //Hay movimiento en la direccion en la cual decrece el eje Y
+        positionYcharacters -= tam;
+    }
+    characters.at(0)->setPos(positionXcharacters,positionYcharacters);
+}
+
 void MainWindow::OnTimeOut(){
     Time -= 1;
     if(Time < 0){
         loseLife();
     }else{
       ui->time->display(Time);
+      positionXcharacters += tam;
+      characters.at(0)->setPos(positionXcharacters,positionYcharacters);
     }
 }
 

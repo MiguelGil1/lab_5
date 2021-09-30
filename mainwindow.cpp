@@ -82,9 +82,21 @@ void MainWindow::loseLife(){
         scene->addText("Game Over!");
     }
 }
+void MainWindow::OnTimeOut(){
+    Time -= 1;
+    if(Time < 0){
+        loseLife();
+    }else{
+      ui->time->display(Time);
+    }
+}
 
-void MainWindow::KeyPressEvent(QKeyEvent *e){
-    switch (e->key()) {
+MainWindow::~MainWindow(){
+    delete ui;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    switch (event->key()) {
         case Qt::Key_A:{
             //Movimiento a la izquierda
             //Hay movimiento en la direccion en la que decrece el eje X
@@ -112,18 +124,5 @@ void MainWindow::KeyPressEvent(QKeyEvent *e){
         }
     }
     characters.at(0)->setPos(positionXcharacters,positionYcharacters);
-}
-
-void MainWindow::OnTimeOut(){
-    Time -= 1;
-    if(Time < 0){
-        loseLife();
-    }else{
-      ui->time->display(Time);
-    }
-}
-
-MainWindow::~MainWindow(){
-    delete ui;
 }
 

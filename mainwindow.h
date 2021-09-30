@@ -24,9 +24,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     void readWorld();
-    void loseLife();
-    void  KeyPressEvent(QKeyEvent *e);
+    void loseLife();   
     ~MainWindow();
+protected:
+    void  keyPressEvent(QKeyEvent *event);
 public slots:
     void  OnTimeOut();
 private:

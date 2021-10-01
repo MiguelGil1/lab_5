@@ -100,6 +100,13 @@ void MainWindow::loseLife(){
         scene->addText("Game Over!");
     }
 }
+
+void MainWindow::explosion(){
+    exploited = true;
+    bomb->hide();
+    //bomb = NULL;
+    blastTime->stop();
+}
 void MainWindow::OnTimeOut(){
     Time -= 1;
     if(Time < 0){
@@ -114,13 +121,55 @@ MainWindow::~MainWindow(){
 }
 
 bool MainWindow::detectColision(){
-    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
+    bool iron  = detectColisionWithIron();
+    bool brick = detectColisionWithBricks();
+    bool enemy = detectColisionWithIron();
+    if(enemy == true){
+        cout << "Perdiste vida" << endl;
+        return true;
+    }else if(iron == true || brick == true){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool MainWindow::detectColisionWithIron(){
+    characters.front()->setPos(positionXmainCharacter,positionYmainCharacter);
     for(int i = 0; i < int(iron.size()); i++){
-        if(characters.at(0)->collidesWithItem(iron[i])){
+        if(characters.front()->collidesWithItem(iron[i])){
             cout << "Colision con " << iron[i] << endl;
             return true;
         }else{
-            characters.at(0)->setBrush(Brushes.at(2));
+            characters.front()->setBrush(Brushes.at(2));
+        }
+    }
+    return false;
+}
+
+bool MainWindow::detectColisionWithBricks(){
+    characters.front()->setPos(positionXmainCharacter,positionYmainCharacter);
+    for(auto i = bricks.begin(); i != bricks.end(); i++){
+        if(characters.front()->collidesWithItem(*i)){
+            cout << "Colision con " << *i << endl;
+            return true;
+        }else{
+            characters.front()->setBrush(Brushes.at(2));
+        }
+    }
+    return false;
+}
+
+bool MainWindow::detectColisionWithEnemies(){
+    characters.front()->setPos(positionXmainCharacter,positionYmainCharacter);
+    for(auto i = characters.begin(); i != characters.end(); i++){
+        if(i != characters.begin()){
+            if(characters.front()->collidesWithItem(*i)){
+                cout << "Colision con " << *i << endl;
+                return true;
+            }else{
+                characters.front()->setBrush(Brushes.at(2));
+            }
         }
     }
     return false;
@@ -177,12 +226,28 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             break;
         }
         case Qt::Key_Space:{
-            //Se pone bomba
-            bomb = scene->addEllipse(positionXmainCharacter,positionYmainCharacter,tam-20,tam-20,Pens.at(0),Brushes.at(3));
+            //Se evalua si hay bombas activas
+            if(exploited == true){
+                //Sin no hay, se pone bomba
+                bomb = scene->addEllipse(positionXmainCharacter,positionYmainCharacter,tam-20,tam-20,Pens.at(0),Brushes.at(3));
+
+                //Se iguala exploited a falsa para que no se pueda poner mas bombas
+                //Mientras las bomba activa explota
+                exploited = false;
+
+                //Se inicia el TIMER//
+                blastTime = new QTimer();
+                //Se conecta con el Slot explosio
+                connect(blastTime, SIGNAL(timeout()), this, SLOT(explosion()));
+                blastTime->start(5000);
+            }else{
+                //Si hya bomba activa, se imprime el siguiente mensaje
+                cout << "Hay bomba activa" << endl;
+            }
             break;
         }
     }
     cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
+    characters.front()->setPos(positionXmainCharacter,positionYmainCharacter);
 }
 

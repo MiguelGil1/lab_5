@@ -50,11 +50,11 @@ MainWindow::MainWindow(QWidget *parent)
         for(int columns = 0; columns < 31; columns++){
             if(world[rows][columns] == 1){
                 //Se agregan cuadrados de hierro
-                worldRect.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(0)));
+                iron.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(0)));
                 //scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
             }else if(world[rows][columns] == 2){
                 //Se agregan los ladrillos
-                worldRect.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(1)));
+                bricks.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(1)));
                 //scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
             }
             positionX += tam;
@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
     //scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
 
-    scene->addRect(0,0,1,1,Pens.at(0),Brushes.at(2));
+    scene->addRect(0,0,10,10,Pens.at(0),Brushes.at(2));
     ui->graphicsView->setScene(scene);
     //ui->graphicsView->setSceneRect();
     ui->graphicsView->show();
@@ -115,9 +115,9 @@ MainWindow::~MainWindow(){
 
 bool MainWindow::detectColision(){
     characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
-    for(int i = 0; i < int(worldRect.size()); i++){
-        if(characters.at(0)->collidesWithItem(worldRect[i])){
-            cout << "Colision con " << worldRect[i] << endl;
+    for(int i = 0; i < int(iron.size()); i++){
+        if(characters.at(0)->collidesWithItem(iron[i])){
+            cout << "Colision con " << iron[i] << endl;
             return true;
         }else{
             characters.at(0)->setBrush(Brushes.at(2));

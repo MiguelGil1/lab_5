@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <vector>
+#include <list>
 #include <QGraphicsRectItem>
 #include <fstream>
 #include <iostream>
@@ -17,36 +18,75 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow{
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    void readWorld();
-    void loseLife();   
+    MainWindow(QWidget *parent = nullptr);      
     ~MainWindow();
 protected:
+    //Metodos que determinan colisiones
     bool detectColision();
+    bool detectColisionWithIron();
+    bool detectColisionWithBricks();
+    //Fin metodos que determinan colisiones
+
+    //Metodo que lee el mundo desde archivo
+    void readWorld();
+    //Fin metodo que lee mundo
+
+    //Metodo que resta vidas
+    void loseLife();
+    //Fin metodo que resta vidas
+
+    //Metodo que realiza la explosion
+    void explosion();
+    //Fin metodo que realiza la explosion
+
+    //Metodo que detecta tecla presionada
     void  keyPressEvent(QKeyEvent *event);
+    //Fin metodo que detecta tecla presionada
 public slots:
     void  OnTimeOut();
 private:
-    QGraphicsScene *scene;
-    QTimer *timer;
     Ui::MainWindow *ui;
-    int world[13][31];
-    int Lives = 3;
-    int Time = 300;  
-    vector <QGraphicsEllipseItem *> characters;
-    vector <QGraphicsRectItem *> worldRect;
+
+    //Declaracion de la escena
+    QGraphicsScene *scene;
+    //Fin declaracion de la escena
+
+    //Declaracion de Timers
+    QTimer *timer;    //Timer dpara decrementar cada 1 segundo el tiempo
+    QTimer *blastTime;//Timer para la explosion
+    //Fin timers
+
+    //Mundo
+    int world[13][31];                          //Arreglo que almacena el mundo
+    int Lives = 3;                              //Vidas
+    int Time = 300;                             //Tiempo para completar el mundo
+    int tam = 30;                               //Tamaño de cada cuadrado
+    vector <QGraphicsEllipseItem *> characters; //Lista de personajes
+    vector <QGraphicsRectItem *> iron;          //Lista de cuadrados de hierra
+    list <QGraphicsRectItem *> bricks;          //Lista de ladrillos
+    QGraphicsEllipseItem *bomb;                 //Bomba
+    bool exploted = true;                       //Booleano que es true si se no hay bombas, false si hay bombas
+    //Fin atributos de Mundo
+
+    //Vectores de decorado
     vector <QColor> Colors;
     vector <QPen> Pens;
     vector <QBrush> Brushes;
-    int tam = 30;
-    int movement = 10;
-    int positionXmainCharacter = (tam/2)+5;
-    int positionYmainCharacter = (tam/2)+5;
-    QGraphicsEllipseItem *bomb;
+    //Fin de vectores para decorado
+
+    //Atributos de personaje principal
+    int movement = 10;                      //Pixeles que se mueve
+    int positionXmainCharacter = (tam/2)+5; //Posicion en el eje X del PJ
+    int positionYmainCharacter = (tam/2)+5; //Posicion en el eje Y del PJ
+    //Fin de atributos de perosnaje principal
+
+
+
+
+
 };
 #endif // MAINWINDOW_H

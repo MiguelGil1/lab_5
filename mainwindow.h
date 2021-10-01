@@ -29,6 +29,7 @@ protected:
     bool detectColision();
     bool detectColisionWithIron();
     bool detectColisionWithBricks();
+    bool detectColisionWithEnemies();
     //Fin metodos que determinan colisiones
 
     //Metodo que lee el mundo desde archivo
@@ -39,15 +40,17 @@ protected:
     void loseLife();
     //Fin metodo que resta vidas
 
-    //Metodo que realiza la explosion
-    void explosion();
-    //Fin metodo que realiza la explosion
-
     //Metodo que detecta tecla presionada
     void  keyPressEvent(QKeyEvent *event);
     //Fin metodo que detecta tecla presionada
 public slots:
+    //Metodo que realiza el decremento de del tiempo
     void  OnTimeOut();
+    //Fin metodo que realiza el decremento de del tiempo
+
+    //Metodo que realiza la explosion
+    void explosion();
+    //Fin metodo que realiza la explosion
 private:
     Ui::MainWindow *ui;
 
@@ -60,16 +63,16 @@ private:
     QTimer *blastTime;//Timer para la explosion
     //Fin timers
 
-    //Mundo
+    //Atributos de mundo
     int world[13][31];                          //Arreglo que almacena el mundo
     int Lives = 3;                              //Vidas
     int Time = 300;                             //Tiempo para completar el mundo
     int tam = 30;                               //Tamaño de cada cuadrado
-    vector <QGraphicsEllipseItem *> characters; //Lista de personajes
+    list <QGraphicsEllipseItem *> characters;   //Lista de personajes
     vector <QGraphicsRectItem *> iron;          //Lista de cuadrados de hierra
     list <QGraphicsRectItem *> bricks;          //Lista de ladrillos
     QGraphicsEllipseItem *bomb;                 //Bomba
-    bool exploted = true;                       //Booleano que es true si se no hay bombas, false si hay bombas
+    bool exploited = true;                       //Booleano que es true si se no hay bombas, false si hay bombas
     //Fin atributos de Mundo
 
     //Vectores de decorado

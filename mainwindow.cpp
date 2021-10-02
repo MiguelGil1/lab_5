@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #define PATH_WORLD "../lab_5_2/worlds/world.txt"
-#define PATH_IMG "../lab_5/images/ladrillo.PNG"
+#define PATH_IMG "../lab_5_2/images/ladrillo.PNG"
 
 mainCharacter mainChr(0,0,30,30);
 world world;
@@ -33,8 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     Pens.push_back( QPen (Qt::black, 0, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
     //Fin agregar lapices
 
-    int *worldMatrix = world.readWorld(PATH_WORLD);
+    //Se llema el metodo de la libreria world llamado readworld para leer el mundo del .txt
+    array <array<int,31>,13> worldMatrix = world.readWorld(PATH_WORLD);
+    //world.readWorld(PATH_WORLD);
+    showWorld(worldMatrix);
 
+    //Se agrega el personaje principal
     PJ = scene->addEllipse(mainChr.getPositionXmainCharacter(), mainChr.getPositionYmainCharacter(),mainChr.getSize(),mainChr.getSize(),Pens.at(0),Brushes.at(2));
 
     ui->graphicsView->setScene(scene);
@@ -84,6 +88,27 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PJ->setPos(mainChr.getPositionXmainCharacter(),mainChr.getPositionYmainCharacter());
             break;
         }
+    }
+}
+
+void MainWindow::showWorld(array <array<int,31>,13> world){
+    int positionX = -30;
+    int positionY = -30;
+    for(int rows = 0; rows != 13; rows++){
+        positionX = -30;
+        for(int columns = 0; columns < 31; columns++){
+            if(world[rows][columns] == 1){
+                //Se agregan cuadrados de hierro
+                iron.push_back(scene->addRect(positionX,positionY,30,30,Pens.at(0),Brushes.at(0)));
+                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
+            }else if(world[rows][columns] == 2){
+                //Se agregan los ladrillos
+                bricks.push_back(scene->addRect(positionX,positionY,30,30,Pens.at(0),Brushes.at(1)));
+                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
+            }
+            positionX += 30;
+        }
+        positionY += 30;
     }
 }
 

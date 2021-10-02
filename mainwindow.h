@@ -34,7 +34,7 @@ public:
     ~MainWindow();
 protected:
     void keyPressEvent(QKeyEvent *event); //Metodo que detecta que tecla fue presionada
-    void showWorld();
+    void showWorld(array <array<int,31>,13>);
 private:
     Ui::MainWindow *ui;
 

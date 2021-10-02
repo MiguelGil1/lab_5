@@ -1,16 +1,19 @@
 #ifndef WORLD_H
 #define WORLD_H
+
 #include <iostream>
 #include <fstream>
+#include <array>
+
 using namespace std;
 class world{
 public:
-    world();
-    ~world();
+    //~world();
 
-    int * readWorld(string file);
+    array <array<int,31>,13> readWorld(string file);
+    //void readWorld(string file);
 private:
-    int worldMatrix[13][31];
+    array <array<int,31>,13> worldMatrix;
 };
 
 #endif // WORLD_H

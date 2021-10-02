@@ -2,7 +2,6 @@
 #define MAINCHARACTER_H
 //IMPORTACION DE LIBRERIAS
 
-#include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 
 //FIN IMPORTACION DE LIBRERIAS

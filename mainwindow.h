@@ -1,92 +1,69 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+//Inicio de importacion de Librerias
+
 #include <QMainWindow>
 #include <QGraphicsScene>
-#include <vector>
-#include <list>
+#include <QGraphicsEllipseItem>
 #include <QGraphicsRectItem>
-#include <fstream>
-#include <iostream>
 #include <QTimer>
 #include <QKeyEvent>
-#include <QDebug>
 
+#include "mainCharacter.h"
+#include "bomb.h"
+#include "bricks.h"
+#include "iron.h"
+
+#include <vector>
+#include <list>
+
+#include <fstream>
+#include <iostream>
+
+//Fin de importacion de librerias
 using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow{
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);      
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-protected:
-    //Metodos que determinan colisiones
-    bool detectColision();
-    bool detectColisionWithIron();
-    bool detectColisionWithBricks();
-    //Fin metodos que determinan colisiones
-
-    //Metodo que lee el mundo desde archivo
-    void readWorld();
-    //Fin metodo que lee mundo
-
-    //Metodo que resta vidas
-    void loseLife();
-    //Fin metodo que resta vidas
-
-    //Metodo que realiza la explosion
-    void explosion();
-    //Fin metodo que realiza la explosion
-
-    //Metodo que detecta tecla presionada
-    void  keyPressEvent(QKeyEvent *event);
-    //Fin metodo que detecta tecla presionada
 public slots:
-    void  OnTimeOut();
+
+    void  OnTimeOut(); //Metodo que realiza el decremento de del tiempo
+protected:
+    void keyPressEvent(QKeyEvent *event); //Metodo que detecta que tecla fue presionada
+    void loseLife();                      //Metodo que merma la vida
+    void readWorld();                     //Metodoq que se ecarga de montar el mundo
+    void explosion();                     //Metodo que se encarga de explotar la bomba
+    bool detectColision();                //Evalua colisiones con todo el mundo en general
+    bool detectColisionWithIron();        //Detecta coliiones conbloques de Hierro
+    bool detectColisionWithBricks();      //Detecta colisiones con los ladrillos
+    //bool detectColisionWithEnemies();     //Detecta colisiones con enemigos
 private:
     Ui::MainWindow *ui;
 
-    //Declaracion de la escena
-    QGraphicsScene *scene;
-    //Fin declaracion de la escena
+    QGraphicsScene *scene;//Declaracion de la escena
+    QTimer *timer;        //Timer dpara decrementar cada 1 segundo el tiempo
 
-    //Declaracion de Timers
-    QTimer *timer;    //Timer dpara decrementar cada 1 segundo el tiempo
-    QTimer *blastTime;//Timer para la explosion
-    //Fin timers
-
-    //Mundo
-    int world[13][31];                          //Arreglo que almacena el mundo
-    int Lives = 3;                              //Vidas
-    int Time = 300;                             //Tiempo para completar el mundo
-    int tam = 30;                               //Tamaño de cada cuadrado
-    vector <QGraphicsEllipseItem *> characters; //Lista de personajes
-    vector <QGraphicsRectItem *> iron;          //Lista de cuadrados de hierra
-    list <QGraphicsRectItem *> bricks;          //Lista de ladrillos
-    QGraphicsEllipseItem *bomb;                 //Bomba
-    bool exploted = true;                       //Booleano que es true si se no hay bombas, false si hay bombas
-    //Fin atributos de Mundo
-
-    //Vectores de decorado
-    vector <QColor> Colors;
-    vector <QPen> Pens;
-    vector <QBrush> Brushes;
-    //Fin de vectores para decorado
-
-    //Atributos de personaje principal
-    int movement = 10;                      //Pixeles que se mueve
-    int positionXmainCharacter = (tam/2)+5; //Posicion en el eje X del PJ
-    int positionYmainCharacter = (tam/2)+5; //Posicion en el eje Y del PJ
-    //Fin de atributos de perosnaje principal
+    mainCharacter *PJ;           //Jugador Principal
+    bomb *bomba;                 //Bomba
+    bricks *ladrillo;            //Ladrillo
+    iron *hierro;                //Hierro
+    list <bricks *> mBricks;     //Lista de tipo objetos ladrillo
+    vector <iron *> mIron;       //Lista de objetos tipo Iron
 
 
+    int Time = 300;
+    bool activeBomb = false;
 
-
-
+    array <array<int,31>,13> worldMatrix;
 };
 #endif // MAINWINDOW_H

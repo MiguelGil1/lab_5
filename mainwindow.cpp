@@ -1,75 +1,192 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define PATH_WORLD "../lab_5/worlds/world.txt"
-#define PATH_IMG "../lab_5/images/ladrillo.PNG"
-#define PATH_BOMB "../lab_5/images/bomba.png"
-//#define tam 30
+#define PATH_WORLD "../lab_5_2/worlds/world.txt"
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     scene = new QGraphicsScene();
+
+    PJ = new mainCharacter(0,0,30,30);
+    scene->addItem(PJ);
     readWorld();
-
-    int positionX = 0;
-    int positionY = 0;
-
-    QImage im(PATH_IMG);
-    QImage imBomb(PATH_BOMB);
-    //Agregando colores
-    Colors.push_back(QColor(187,187,187));
-    Colors.push_back(QColor(255,0,0));
-    Colors.push_back(QColor(0,0,0));
-    //Fin de agregar colores
-
-    //Agregando brochas
-    Brushes.push_back(QBrush(Colors.at(0)));
-    Brushes.push_back(QBrush(im));
-    Brushes.push_back(QBrush(Colors.at(1)));
-    Brushes.push_back(QBrush(Colors.at(2)));
-    //Brushes.push_back(QBrush(imBomb));
-    //Fin de agregar brochas
-
-    //Agregando lapices
-    Pens.push_back( QPen (Qt::black, 0, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
-    //Fin agregar lapices
 
     //Se inicia el TIMER//
     timer = new QTimer();
-    //Se conecta con el Slot OntimeOut
     connect(timer, SIGNAL(timeout()), this, SLOT(OnTimeOut()));
     timer->start(1000);
-    ui->time->display(Time);
-    ui->lives->display(Lives);
+    ui->Timer->display(Time);
+    ui->Lives->display(PJ->getLives());
 
-
-    for(int rows = 0; rows < 13; rows++){
-        positionX = 0;
-        for(int columns = 0; columns < 31; columns++){
-            if(world[rows][columns] == 1){
-                //Se agregan cuadrados de hierro
-                iron.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(0)));
-                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
-            }else if(world[rows][columns] == 2){
-                //Se agregan los ladrillos
-                bricks.push_back(scene->addRect(positionX,positionY,tam,tam,Pens.at(0),Brushes.at(1)));
-                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
-            }
-            positionX += tam;
-        }
-        positionY += tam;
-    }
-    //Añadiendo el personaje principal al vector de personajes
-    characters.push_back(scene->addEllipse(positionXmainCharacter,positionYmainCharacter,tam-20,tam-20,Pens.at(0),Brushes.at(2)));
-    cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-    //scene->addEllipse(positionX+tam,positionY+tam,tam,tam,pen1,Brush3);
-
-    scene->addRect(0,0,10,10,Pens.at(0),Brushes.at(2));
     ui->graphicsView->setScene(scene);
-    //ui->graphicsView->setSceneRect();
     ui->graphicsView->show();
+}
+
+MainWindow::~MainWindow(){
+    //mainChr.~mainCharacter();
+    delete ui;
+}
+
+void MainWindow::loseLife(){
+    int Lives = PJ->getLives();
+    if(Lives != 0){
+        Lives -= 1;
+        Time = 300;
+        ui->Lives->display(Lives);
+        ui->Timer->display(Time);
+        PJ->setPositionXmainCharacter(0);
+        PJ->setPositionYmainCharacter(0);
+        PJ->setPos(0,0);
+        PJ->setLives(Lives);
+    }else{
+        scene->clear();
+        scene->addText("Game Over!");
+    }
+}
+void MainWindow::explosion(){
+    activeBomb = false;
+    scene->removeItem(bomba);
+    delete bomba;
+}
+
+void MainWindow::OnTimeOut(){
+    Time -= 1;
+    if(Time < 0){
+        loseLife();
+    }else{
+      ui->Timer->display(Time);
+    }
+    if(activeBomb == true){
+        int contador = bomba->getContador();
+        if(contador == 3){
+            explosion();
+        }else{
+            contador += 1;
+            bomba->setContador(contador);
+        }
+    }
+}
+
+bool MainWindow::detectColision(){
+    bool iron  = detectColisionWithIron();
+    bool brick = detectColisionWithBricks();
+    //bool enemy = detectColisionWithEnemies();
+    if(iron == true || brick == true){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool MainWindow::detectColisionWithIron(){
+    for(int i = 0; i < int(mIron.size()); i++){
+        if(PJ->collidesWithItem(mIron[i])){
+            cout << "Colision con " << mIron[i] << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MainWindow::detectColisionWithBricks(){
+    for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+        if(PJ->collidesWithItem(*i)){
+            cout << "Colision con " << *i << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    static int PosX = 0;
+    static int PosY = 0;
+    switch (event->key()) {
+        case Qt::Key_A:{
+            //Movimiento a la izquierda
+            //Hay movimiento en la direccion en la que decrece el eje X
+            int posX = PJ->getPositionXmainCharacter();
+            posX -= 15;
+            PosX -= 30;
+            PJ->setPositionXmainCharacter(posX);
+            PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posX = PJ->getPositionXmainCharacter();
+                posX += 15;
+                PosX += 30;
+                PJ->setPositionXmainCharacter(posX);
+                PJ->changePosition();
+            }
+            break;
+        }
+        case Qt::Key_S:{
+            //Movimiento abajo
+            //Hay moviemiento en el la direccion en la que crece el eje Y
+            int posY = PJ->getPositionYmainCharacter();
+            posY += 15;
+            PosY += 30;
+            PJ->setPositionYmainCharacter(posY);
+            PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posY = PJ->getPositionXmainCharacter();
+                posY -= 15;
+                PosY -= 30;
+                PJ->setPositionYmainCharacter(posY);
+                PJ->changePosition();
+            }
+            break;
+        }
+        case Qt::Key_D:{
+            //Movimiento a la derecha
+            //Hay movimiento en la direccion en la que crece el eje X
+            int posX = PJ->getPositionXmainCharacter();
+            posX += 15;
+            PosX += 30;
+            PJ->setPositionXmainCharacter(posX);
+            PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posX = PJ->getPositionXmainCharacter();
+                posX += 15;
+                PosX += 30;
+                PJ->setPositionXmainCharacter(posX);
+                PJ->changePosition();
+            }
+            break;
+        }
+        case Qt::Key_W:{
+            //Movimiento arriba
+            //Hay movimiento en la direccion en la cual decrece el eje Y
+            int posY = PJ->getPositionYmainCharacter();
+            posY -= 15;
+            PosY -= 30;
+            PJ->setPositionYmainCharacter(posY);
+            PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posY = PJ->getPositionXmainCharacter();
+                posY += 15;
+                PosY += 30;
+                PJ->setPositionYmainCharacter(posY);
+                PJ->changePosition();
+            }
+            break;
+        }
+        case Qt::Key_Space:{
+            if(activeBomb == false){
+                activeBomb = true;
+                bomba = new bomb(PosX,PosY);
+                scene->addItem(bomba);
+            }
+            break;
+        }
+    }
 }
 
 void MainWindow::readWorld(){
@@ -82,107 +199,29 @@ void MainWindow::readWorld(){
         infile >> line;
         for(int  i = 0; i < int(line.length()); i++){
             valor[0] = line[i];
-            world[contRow][i] = stoi(valor);
+            worldMatrix[contRow][i] = (stoi(valor));
         }
         contRow++;
     }
-    //investigar SetSceneRect(4parametros);
-}
-
-void MainWindow::loseLife(){
-    if(Lives != 0){
-        Lives -= 1;
-        Time = 300;
-        ui->lives->display(Lives);
-        ui->time->display(Time);
-    }else{
-        scene->clear();
-        scene->addText("Game Over!");
+    infile.close();
+    int positionX = -30;
+    int positionY = -30;
+    for(int rows = 0; rows != 13; rows++){
+        positionX = -30;
+        for(int columns = 0; columns < 31; columns++){
+            if(worldMatrix[rows][columns] == 1){
+               //Se agregan cuadrados de hierro
+                hierro = new iron(positionX,positionY);
+                scene->addItem(hierro);
+                mIron.push_back(hierro);
+            }else if(worldMatrix[rows][columns] == 2){
+                //Se agregan los ladrillos
+               ladrillo = new bricks(positionX,positionY);
+               scene->addItem(ladrillo);
+               mBricks.push_back(ladrillo);
+            }
+            positionX += 30;
+        }
+        positionY += 30;
     }
 }
-void MainWindow::OnTimeOut(){
-    Time -= 1;
-    if(Time < 0){
-        loseLife();
-    }else{
-      ui->time->display(Time);
-    }
-}
-
-MainWindow::~MainWindow(){
-    delete ui;
-}
-
-bool MainWindow::detectColision(){
-    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
-    for(int i = 0; i < int(iron.size()); i++){
-        if(characters.at(0)->collidesWithItem(iron[i])){
-            cout << "Colision con " << iron[i] << endl;
-            return true;
-        }else{
-            characters.at(0)->setBrush(Brushes.at(2));
-        }
-    }
-    return false;
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event){
-    switch (event->key()) {
-        case Qt::Key_A:{
-            //Movimiento a la izquierda
-            //Hay movimiento en la direccion en la que decrece el eje X
-            positionXmainCharacter -= movement;
-            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-            //Se verifica si hay colision
-            if(detectColision()){
-                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                positionXmainCharacter += movement;
-            }
-            break;
-        }
-        case Qt::Key_S:{
-            //Movimiento abajo
-            //Hay moviemiento en el la direccion en la que crece el eje Y
-            positionYmainCharacter += movement;
-            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-            //Se verifica si hay colision
-            if(detectColision()){
-                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                positionYmainCharacter -= movement;
-            }
-            break;
-        }
-        case Qt::Key_D:{
-            //Movimiento a la derecha
-            //Hay movimiento en la direccion en la que crece el eje X
-            positionXmainCharacter += movement;
-            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-            //Se verifica si hay colision
-            if(detectColision()){
-                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                positionXmainCharacter -= movement;
-            }
-            break;
-        }
-        case Qt::Key_W:{
-            //Movimiento arriba
-            //Hay movimiento en la direccion en la cual decrece el eje Y
-            positionYmainCharacter -= movement;
-            cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-            //Se verifica si hay colision
-            if(detectColision()){
-                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                positionYmainCharacter += movement;
-            }
-            break;
-        }
-        case Qt::Key_Space:{
-            //Se pone bomba
-            bomb = scene->addEllipse(positionXmainCharacter,positionYmainCharacter,tam-20,tam-20,Pens.at(0),Brushes.at(3));
-            break;
-        }
-    }
-    cout << "[" << positionXmainCharacter << " , " << positionYmainCharacter << "]" << endl;
-    characters.at(0)->setPos(positionXmainCharacter,positionYmainCharacter);
-}
-

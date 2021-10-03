@@ -26,11 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->show();
 }
 
-MainWindow::~MainWindow(){
-    //mainChr.~mainCharacter();
-    delete ui;
-}
-
 void MainWindow::loseLife(){
     int Lives = PJ->getLives();
     if(Lives != 0){
@@ -45,6 +40,7 @@ void MainWindow::loseLife(){
     }else{
         scene->clear();
         scene->addText("Game Over!");
+        //MainWindow::~MainWindow();
     }
 }
 void MainWindow::explosion(){
@@ -83,9 +79,9 @@ bool MainWindow::detectColision(){
 }
 
 bool MainWindow::detectColisionWithIron(){
-    for(int i = 0; i < int(mIron.size()); i++){
-        if(PJ->collidesWithItem(mIron[i])){
-            cout << "Colision con " << mIron[i] << endl;
+    for(auto i = mIron.begin(); i != mIron.end(); i++){
+        if(PJ->collidesWithItem(*i)){
+            cout << "Colision con " << *i << endl;
             return true;
         }
     }
@@ -116,7 +112,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PJ->changePosition();
             if(detectColision()){
                 //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                posX = PJ->getPositionXmainCharacter();
                 posX += 15;
                 PosX += 30;
                 PJ->setPositionXmainCharacter(posX);
@@ -134,7 +129,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PJ->changePosition();
             if(detectColision()){
                 //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                posY = PJ->getPositionXmainCharacter();
                 posY -= 15;
                 PosY -= 30;
                 PJ->setPositionYmainCharacter(posY);
@@ -152,9 +146,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PJ->changePosition();
             if(detectColision()){
                 //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                posX = PJ->getPositionXmainCharacter();
-                posX += 15;
-                PosX += 30;
+                posX -= 15;
+                PosX -= 30;
                 PJ->setPositionXmainCharacter(posX);
                 PJ->changePosition();
             }
@@ -170,7 +163,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PJ->changePosition();
             if(detectColision()){
                 //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
-                posY = PJ->getPositionXmainCharacter();
                 posY += 15;
                 PosY += 30;
                 PJ->setPositionYmainCharacter(posY);
@@ -224,4 +216,24 @@ void MainWindow::readWorld(){
         }
         positionY += 30;
     }
+}
+
+MainWindow::~MainWindow(){
+    //Destruimos al personaje principal
+    scene->removeItem(PJ);
+    delete PJ;
+    //Fin de eliminacion del personaje principal
+
+    //Destruimos los ladrillos restantes
+    for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+        scene->removeItem(*i);
+    }
+    //Fin de eliminacion de ladrillos restantes
+
+    //Destruimos los hierros
+    for(auto i = mIron.begin(); i != mIron.end(); i++){
+        scene->removeItem(*i);
+    }
+    //Fin de destruccion de hierros
+    delete ui;
 }

@@ -71,6 +71,37 @@ void MainWindow::OnTimeOut(){
     }
 }
 
+bool MainWindow::detectColision(){
+    bool iron  = detectColisionWithIron();
+    bool brick = detectColisionWithBricks();
+    //bool enemy = detectColisionWithEnemies();
+    if(iron == true || brick == true){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool MainWindow::detectColisionWithIron(){
+    for(int i = 0; i < int(mIron.size()); i++){
+        if(PJ->collidesWithItem(mIron[i])){
+            cout << "Colision con " << mIron[i] << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MainWindow::detectColisionWithBricks(){
+    for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+        if(PJ->collidesWithItem(*i)){
+            cout << "Colision con " << *i << endl;
+            return true;
+        }
+    }
+    return false;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event){
     static int PosX = 0;
     static int PosY = 0;
@@ -83,6 +114,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PosX -= 30;
             PJ->setPositionXmainCharacter(posX);
             PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posX = PJ->getPositionXmainCharacter();
+                posX += 15;
+                PosX += 30;
+                PJ->setPositionXmainCharacter(posX);
+                PJ->changePosition();
+            }
             break;
         }
         case Qt::Key_S:{
@@ -93,6 +132,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PosY += 30;
             PJ->setPositionYmainCharacter(posY);
             PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posY = PJ->getPositionXmainCharacter();
+                posY -= 15;
+                PosY -= 30;
+                PJ->setPositionYmainCharacter(posY);
+                PJ->changePosition();
+            }
             break;
         }
         case Qt::Key_D:{
@@ -103,6 +150,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PosX += 30;
             PJ->setPositionXmainCharacter(posX);
             PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posX = PJ->getPositionXmainCharacter();
+                posX += 15;
+                PosX += 30;
+                PJ->setPositionXmainCharacter(posX);
+                PJ->changePosition();
+            }
             break;
         }
         case Qt::Key_W:{
@@ -113,6 +168,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
             PosY -= 30;
             PJ->setPositionYmainCharacter(posY);
             PJ->changePosition();
+            if(detectColision()){
+                //Si hay colision. se devuelve al presonaje en la psicion en la que estaba
+                posY = PJ->getPositionXmainCharacter();
+                posY += 15;
+                PosY += 30;
+                PJ->setPositionYmainCharacter(posY);
+                PJ->changePosition();
+            }
             break;
         }
         case Qt::Key_Space:{

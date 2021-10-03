@@ -1,66 +1,41 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINCHARACTER_H
+#define MAINCHARACTER_H
+//IMPORTACION DE LIBRERIAS
 
-//Inicio de importacion de Librerias
+#include <QGraphicsItem>
+#include <QPainter>
 
-#include <QMainWindow>
-#include <QGraphicsScene>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsRectItem>
-#include <QTimer>
-#include <QKeyEvent>
+//FIN IMPORTACION DE LIBRERIAS
 
-#include "mainCharacter.h"
-#include "bomb.h"
-#include "bricks.h"
-#include "iron.h"
-
-#include <vector>
-#include <list>
-
-#include <fstream>
-#include <iostream>
-
-//Fin de importacion de librerias
-using namespace std;
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
-
+class mainCharacter: public QGraphicsItem{
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-public slots:
+    mainCharacter(int posX,int posY, int mov, int tam); //Constructor
 
-    void  OnTimeOut(); //Metodo que realiza el decremento de del tiempo
-    //void explosion();  //Metodo que realiza la explosion de la bomba
-protected:
-    void keyPressEvent(QKeyEvent *event);     //Metodo que detecta que tecla fue presionada
-    void loseLife();                          //Metodo que merma la vida
-    void readWorld();
-    void explosion();
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void changePosition();
+
+    int getMovement() const;
+    void setMovement(int value);
+
+    int getPositionXmainCharacter() const;
+    void setPositionXmainCharacter(int value);
+
+    int getPositionYmainCharacter() const;
+    void setPositionYmainCharacter(int value);
+
+    int getSize() const;
+    void setSize(int value);
+
+    int getLives() const;
+    void setLives(int value);
+
 private:
-    Ui::MainWindow *ui;
+    int size;                   //Tamaño del personaje principal
+    int movement;               //Pixeles que se mueve
+    int positionXmainCharacter; //Posicion en el eje X del PJ
+    int positionYmainCharacter; //Posicion en el eje Y del PJ
+    int Lives = 3;              //Vidas del personaje principal
 
-    QGraphicsScene *scene;//Declaracion de la escena
-    QTimer *timer;        //Timer dpara decrementar cada 1 segundo el tiempo
-
-    mainCharacter *PJ;           //Jugador Principal
-    bomb *bomba;                 //Bomba
-    bricks *ladrillo;            //Ladrillo
-    iron *hierro;                //Hierro
-    list <bricks *> mBricks;     //Lista de tipo objetos ladrillo
-    vector <iron *> mIron;       //Lista de objetos tipo Iron
-
-
-    int Time = 300;
-    bool activeBomb = false;
-
-    array <array<int,31>,13> worldMatrix;
 };
-#endif // MAINWINDOW_H
+#endif // MAINCHARACTER_H

@@ -2,10 +2,8 @@
 #include "ui_mainwindow.h"
 
 #define PATH_WORLD "../lab_5_2/worlds/world.txt"
-#define PATH_IMG "../lab_5_2/images/ladrillo.PNG"
 
-mainCharacter mainChr(0,0,30,30);
-world world;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -13,33 +11,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene();
 
-    QImage im(PATH_IMG);
-    //QImage imBomb(PATH_BOMB);
-    //Agregando colores
-    Colors.push_back(QColor(187,187,187));
-    Colors.push_back(QColor(255,0,0));
-    Colors.push_back(QColor(0,0,0));
-    //Fin de agregar colores
+    PJ = new mainCharacter(0,0,30,30);
+    scene->addItem(PJ);
+    readWorld();
 
-    //Agregando brochas
-    Brushes.push_back(QBrush(Colors.at(0)));
-    Brushes.push_back(QBrush(im));
-    Brushes.push_back(QBrush(Colors.at(1)));
-    Brushes.push_back(QBrush(Colors.at(2)));
-    //Brushes.push_back(QBrush(imBomb));
-    //Fin de agregar brochas
-
-    //Agregando lapices
-    Pens.push_back( QPen (Qt::black, 0, Qt::SolidLine,Qt::RoundCap, Qt::RoundJoin));
-    //Fin agregar lapices
-
-    //Se llema el metodo de la libreria world llamado readworld para leer el mundo del .txt
-    array <array<int,31>,13> worldMatrix = world.readWorld(PATH_WORLD);
-    //world.readWorld(PATH_WORLD);
-    showWorld(worldMatrix);
-
-    //Se agrega el personaje principal
-    PJ = scene->addEllipse(mainChr.getPositionXmainCharacter(), mainChr.getPositionYmainCharacter(),mainChr.getSize(),mainChr.getSize(),Pens.at(0),Brushes.at(2));
+    //Se inicia el TIMER//
+    timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(OnTimeOut()));
+    timer->start(1000);
+    ui->Timer->display(Time);
+    ui->Lives->display(PJ->getLives());
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -50,65 +31,134 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
+void MainWindow::loseLife(){
+    int Lives = PJ->getLives();
+    if(Lives != 0){
+        Lives -= 1;
+        Time = 300;
+        ui->Lives->display(Lives);
+        ui->Timer->display(Time);
+        PJ->setPositionXmainCharacter(0);
+        PJ->setPositionYmainCharacter(0);
+        PJ->setPos(0,0);
+        PJ->setLives(Lives);
+    }else{
+        scene->clear();
+        scene->addText("Game Over!");
+    }
+}
+void MainWindow::explosion(){
+    activeBomb = false;
+    scene->removeItem(bomba);
+    delete bomba;
+}
+
+void MainWindow::OnTimeOut(){
+    Time -= 1;
+    if(Time < 0){
+        loseLife();
+    }else{
+      ui->Timer->display(Time);
+    }
+    if(activeBomb == true){
+        int contador = bomba->getContador();
+        if(contador == 3){
+            explosion();
+        }else{
+            contador += 1;
+            bomba->setContador(contador);
+        }
+    }
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event){
+    static int PosX = 0;
+    static int PosY = 0;
     switch (event->key()) {
         case Qt::Key_A:{
             //Movimiento a la izquierda
             //Hay movimiento en la direccion en la que decrece el eje X
-            int posX = mainChr.getPositionXmainCharacter();
-            posX -= 30;
-            mainChr.setPositionXmainCharacter(posX);
-            PJ->setPos(mainChr.getPositionXmainCharacter(),mainChr.getPositionYmainCharacter());
+            int posX = PJ->getPositionXmainCharacter();
+            posX -= 15;
+            PosX -= 30;
+            PJ->setPositionXmainCharacter(posX);
+            PJ->changePosition();
             break;
         }
         case Qt::Key_S:{
             //Movimiento abajo
             //Hay moviemiento en el la direccion en la que crece el eje Y
-            int posY = mainChr.getPositionYmainCharacter();
-            posY += 30;
-            mainChr.setPositionYmainCharacter(posY);
-            PJ->setPos(mainChr.getPositionXmainCharacter(),mainChr.getPositionYmainCharacter());
+            int posY = PJ->getPositionYmainCharacter();
+            posY += 15;
+            PosY += 30;
+            PJ->setPositionYmainCharacter(posY);
+            PJ->changePosition();
             break;
         }
         case Qt::Key_D:{
             //Movimiento a la derecha
             //Hay movimiento en la direccion en la que crece el eje X
-            int posX = mainChr.getPositionXmainCharacter();
-            posX += 30;
-            mainChr.setPositionXmainCharacter(posX);
-            PJ->setPos(mainChr.getPositionXmainCharacter(),mainChr.getPositionYmainCharacter());
+            int posX = PJ->getPositionXmainCharacter();
+            posX += 15;
+            PosX += 30;
+            PJ->setPositionXmainCharacter(posX);
+            PJ->changePosition();
             break;
         }
         case Qt::Key_W:{
             //Movimiento arriba
             //Hay movimiento en la direccion en la cual decrece el eje Y
-            int posY = mainChr.getPositionYmainCharacter();
-            posY -= 30;
-            mainChr.setPositionYmainCharacter(posY);
-            PJ->setPos(mainChr.getPositionXmainCharacter(),mainChr.getPositionYmainCharacter());
+            int posY = PJ->getPositionYmainCharacter();
+            posY -= 15;
+            PosY -= 30;
+            PJ->setPositionYmainCharacter(posY);
+            PJ->changePosition();
+            break;
+        }
+        case Qt::Key_Space:{
+            if(activeBomb == false){
+                activeBomb = true;
+                bomba = new bomb(PosX,PosY);
+                scene->addItem(bomba);
+            }
             break;
         }
     }
 }
 
-void MainWindow::showWorld(array <array<int,31>,13> world){
+void MainWindow::readWorld(){
+    string line = "";
+    string valor = "";
+    int contRow = 0;
+    ifstream infile;
+    infile.open(PATH_WORLD);
+    while(!infile.eof()){
+        infile >> line;
+        for(int  i = 0; i < int(line.length()); i++){
+            valor[0] = line[i];
+            worldMatrix[contRow][i] = (stoi(valor));
+        }
+        contRow++;
+    }
+    infile.close();
     int positionX = -30;
     int positionY = -30;
     for(int rows = 0; rows != 13; rows++){
         positionX = -30;
         for(int columns = 0; columns < 31; columns++){
-            if(world[rows][columns] == 1){
-                //Se agregan cuadrados de hierro
-                iron.push_back(scene->addRect(positionX,positionY,30,30,Pens.at(0),Brushes.at(0)));
-                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush1);
-            }else if(world[rows][columns] == 2){
+            if(worldMatrix[rows][columns] == 1){
+               //Se agregan cuadrados de hierro
+                hierro = new iron(positionX,positionY);
+                scene->addItem(hierro);
+                mIron.push_back(hierro);
+            }else if(worldMatrix[rows][columns] == 2){
                 //Se agregan los ladrillos
-                bricks.push_back(scene->addRect(positionX,positionY,30,30,Pens.at(0),Brushes.at(1)));
-                //scene->addRect(positionX,positionY,tam,tam,pen1,Brush2);
+               ladrillo = new bricks(positionX,positionY);
+               scene->addItem(ladrillo);
+               mBricks.push_back(ladrillo);
             }
             positionX += 30;
         }
         positionY += 30;
     }
 }
-

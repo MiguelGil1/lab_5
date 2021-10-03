@@ -7,6 +7,19 @@ mainCharacter::mainCharacter(int posX, int posY, int mov, int tam){
     size = tam;
 }
 
+QRectF mainCharacter::boundingRect() const{
+    return QRectF(positionXmainCharacter,positionYmainCharacter,size,size);
+}
+
+void mainCharacter::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
+    painter->setBrush(Qt::blue);
+    painter->drawEllipse(boundingRect());
+}
+
+void mainCharacter::changePosition(){
+    setPos(positionXmainCharacter,positionYmainCharacter);
+}
+
 int mainCharacter::getMovement() const{
     return movement;
 }
@@ -37,4 +50,12 @@ int mainCharacter::getSize() const{
 
 void mainCharacter::setSize(int value){
     size = value;
+}
+
+int mainCharacter::getLives() const{
+    return Lives;
+}
+
+void mainCharacter::setLives(int value){
+    Lives = value;
 }

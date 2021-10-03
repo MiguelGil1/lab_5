@@ -5,12 +5,15 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
 #include <QGraphicsRectItem>
 #include <QTimer>
 #include <QKeyEvent>
 
-#include <mainCharacter.h>
-#include <world.h>
+#include "mainCharacter.h"
+#include "bomb.h"
+#include "bricks.h"
+#include "iron.h"
 
 #include <vector>
 #include <list>
@@ -32,26 +35,32 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+public slots:
+
+    void  OnTimeOut(); //Metodo que realiza el decremento de del tiempo
+    //void explosion();  //Metodo que realiza la explosion de la bomba
 protected:
-    void keyPressEvent(QKeyEvent *event); //Metodo que detecta que tecla fue presionada
-    void showWorld(array <array<int,31>,13>);
+    void keyPressEvent(QKeyEvent *event);     //Metodo que detecta que tecla fue presionada
+    void loseLife();                          //Metodo que merma la vida
+    void readWorld();
+    void explosion();
 private:
     Ui::MainWindow *ui;
 
-    //Declaracion de la escena
-    QGraphicsScene *scene;
-    //Fin declaracion de la escena
+    QGraphicsScene *scene;//Declaracion de la escena
+    QTimer *timer;        //Timer dpara decrementar cada 1 segundo el tiempo
 
-    //Vectores de decorado
-    vector <QColor> Colors;  //Vector de Colores
-    vector <QPen> Pens;      //Vector de Lapices
-    vector <QBrush> Brushes; //Vector de Brushes
-    //Fin de vectores para decorado
+    mainCharacter *PJ;           //Jugador Principal
+    bomb *bomba;                 //Bomba
+    bricks *ladrillo;            //Ladrillo
+    iron *hierro;                //Hierro
+    list <bricks *> mBricks;     //Lista de tipo objetos ladrillo
+    vector <iron *> mIron;       //Lista de objetos tipo Iron
 
-    QGraphicsEllipseItem *PJ;                   //Jugador Principal
-    list <QGraphicsEllipseItem *> enemies;      //Lista de enemigos
-    vector <QGraphicsRectItem *> iron;          //Lista de cuadrados de hierra
-    list <QGraphicsRectItem *> bricks;          //Lista de ladrillos
-    QGraphicsEllipseItem *bomb;                 //Bomba
+
+    int Time = 300;
+    bool activeBomb = false;
+
+    array <array<int,31>,13> worldMatrix;
 };
 #endif // MAINWINDOW_H

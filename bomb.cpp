@@ -21,3 +21,19 @@ int bomb::getContador() const{
 void bomb::setContador(int value){
     contador = value;
 }
+
+int bomb::getPosX() const{
+    return posX;
+}
+
+void bomb::setPosX(int value){
+    posX = value;
+}
+
+int bomb::getPosY() const{
+    return posY;
+}
+
+void bomb::setPosY(int value){
+    posY = value;
+}

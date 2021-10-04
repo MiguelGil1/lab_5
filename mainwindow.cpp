@@ -30,7 +30,7 @@ void MainWindow::loseLife(){
     int Lives = PJ->getLives();
     if(Lives != 0){
         Lives -= 1;
-        Time = 300;
+        Time = 10;
         ui->Lives->display(Lives);
         ui->Timer->display(Time);
         PJ->setPositionXmainCharacter(0);
@@ -38,15 +38,99 @@ void MainWindow::loseLife(){
         PJ->setPos(0,0);
         PJ->setLives(Lives);
     }else{
-        scene->clear();
+        //Destruimos al personaje principal
+        scene->removeItem(PJ);
+        delete PJ;
+        //Fin de eliminacion del personaje principal
+
+        //Destruimos los ladrillos restantes
+        for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+            scene->removeItem(*i);
+            delete *i;
+        }
+
+        //Se vacía el contenedor de Ladrillos
+        for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+            mBricks.pop_front();
+        }
+        //Finalizacion de vaciado
+
+        //Destruimos los hierros
+        for(auto i = mIron.begin(); i != mIron.end(); i++){
+            scene->removeItem(*i);
+            delete *i;
+        }
+        //Fin de destruccion de hierros
+
+        //Se vacía el contenedor de Ladrillos
+        for(auto i = mIron.end(); i != mIron.begin(); i++){
+            mIron.pop_back();
+        }
+        //Finalizacion de vaciado
         scene->addText("Game Over!");
         //MainWindow::~MainWindow();
     }
 }
 void MainWindow::explosion(){
     activeBomb = false;
+    int PosX = bomba->getPosX();
+    int PosY = bomba->getPosY();
+    bomba1 = new bomb(PosX-30,PosY);//Bomba un cuadro a la izquierda
+    bomba2 = new bomb(PosX+30,PosY);//Bomba un cuadro a la derecha
+    bomba3 = new bomb(PosX,PosY-30);//Bomba un cuadro arriba
+    bomba4 = new bomb(PosX,PosY+30);//Bomba un cuadro abajo
+
+    //Deteccion de colision de alguna bomba con un ladrillo
+    if(bomba->collidesWithItem(PJ)){
+        loseLife();
+    }else if(bomba1->collidesWithItem(PJ)){
+        loseLife();
+    }else if(bomba2->collidesWithItem(PJ)){
+        loseLife();
+    }else if(bomba3->collidesWithItem(PJ)){
+        loseLife();
+    }else if(bomba4->collidesWithItem(PJ)){
+        loseLife();
+    }
+    //Fin deteccion de colision con algun ladrillo
+
+
+    //Deteccion de colisiones con ladrillos
+    for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+        if(bomba1->collidesWithItem(*i)){
+            cout << "Ladrillo eliminado: " << *i << endl;
+            scene->removeItem(*i);
+            delete *i;
+            mBricks.remove(*i);
+        }else if(bomba2->collidesWithItem(*i)){
+            cout << "Ladrillo eliminado: " << *i << endl;
+            scene->removeItem(*i);
+            delete *i;
+            mBricks.remove(*i);
+        }else if(bomba3->collidesWithItem(*i)){
+            cout << "Ladrillo eliminado: " << *i << endl;
+            scene->removeItem(*i);
+            delete *i;
+            mBricks.remove(*i);
+        }else if(bomba4->collidesWithItem(*i)){
+            cout << "Ladrillo eliminado: " << *i << endl;
+            scene->removeItem(*i);
+            delete *i;
+            mBricks.remove(*i);
+        }
+    }
+    //Fin deteccion colisiones con ladrillos
+
     scene->removeItem(bomba);
+    scene->removeItem(bomba1);
+    scene->removeItem(bomba2);
+    scene->removeItem(bomba3);
+    scene->removeItem(bomba4);
     delete bomba;
+    delete bomba1;
+    delete bomba2;
+    delete bomba3;
+    delete bomba4;
 }
 
 void MainWindow::OnTimeOut(){
@@ -227,13 +311,26 @@ MainWindow::~MainWindow(){
     //Destruimos los ladrillos restantes
     for(auto i = mBricks.begin(); i != mBricks.end(); i++){
         scene->removeItem(*i);
+        delete *i;
     }
-    //Fin de eliminacion de ladrillos restantes
+
+    //Se vacía el contenedor de Ladrillos
+    for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+        mBricks.pop_front();
+    }
+    //Finalizacion de vaciado
 
     //Destruimos los hierros
     for(auto i = mIron.begin(); i != mIron.end(); i++){
         scene->removeItem(*i);
+        delete *i;
     }
     //Fin de destruccion de hierros
+
+    //Se vacía el contenedor de Ladrillos
+    for(auto i = mIron.end(); i != mIron.begin(); i++){
+        mIron.pop_back();
+    }
+    //Finalizacion de vaciado
     delete ui;
 }

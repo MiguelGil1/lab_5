@@ -13,6 +13,12 @@ public:
     int getContador() const;
     void setContador(int value);
 
+    int getPosX() const;
+    void setPosX(int value);
+
+    int getPosY() const;
+    void setPosY(int value);
+
 private:
     int posX;
     int posY;

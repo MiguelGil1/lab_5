@@ -48,6 +48,16 @@
       <widget class="QLCDNumber" name="Timer"/>
      </item>
      <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>SCORE:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLCDNumber" name="Score"/>
+     </item>
+     <item>
       <widget class="QLabel" name="label">
        <property name="text">
         <string>LEFT:</string>

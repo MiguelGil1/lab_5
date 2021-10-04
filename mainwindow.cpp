@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start(1000);
     ui->Timer->display(Time);
     ui->Lives->display(PJ->getLives());
+    ui->Score->display(PJ->getScore());
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -30,7 +31,7 @@ void MainWindow::loseLife(){
     int Lives = PJ->getLives();
     if(Lives != 0){
         Lives -= 1;
-        Time = 10;
+        Time = 300;
         ui->Lives->display(Lives);
         ui->Timer->display(Time);
         PJ->setPositionXmainCharacter(0);
@@ -79,6 +80,7 @@ void MainWindow::explosion(){
     bomba2 = new bomb(PosX+30,PosY);//Bomba un cuadro a la derecha
     bomba3 = new bomb(PosX,PosY-30);//Bomba un cuadro arriba
     bomba4 = new bomb(PosX,PosY+30);//Bomba un cuadro abajo
+    int Score = PJ->getScore();
 
     //Deteccion de colision de alguna bomba con un ladrillo
     if(bomba->collidesWithItem(PJ)){
@@ -102,24 +104,32 @@ void MainWindow::explosion(){
             scene->removeItem(*i);
             delete *i;
             mBricks.remove(*i);
+            Score += 50;
         }else if(bomba2->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
             mBricks.remove(*i);
+            Score += 50;
         }else if(bomba3->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
             mBricks.remove(*i);
+            Score += 50;
         }else if(bomba4->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
             mBricks.remove(*i);
+            Score += 50;
         }
     }
     //Fin deteccion colisiones con ladrillos
+
+    //Se actualiza el score en el LDC y en el objeto  PJ
+    ui->Score->display(Score);
+    PJ->setScore(Score);
 
     scene->removeItem(bomba);
     scene->removeItem(bomba1);

@@ -65,7 +65,7 @@ private:
     vector <iron *> mIron;       //Lista de objetos tipo Iron
 
 
-    int Time = 10;
+    int Time = 300;
     bool activeBomb = false;
 
     array <array<int,31>,13> worldMatrix;

@@ -30,12 +30,16 @@ public:
     int getLives() const;
     void setLives(int value);
 
+    int getScore() const;
+    void setScore(int value);
+
 private:
     int size;                   //Tamaño del personaje principal
     int movement;               //Pixeles que se mueve
     int positionXmainCharacter; //Posicion en el eje X del PJ
     int positionYmainCharacter; //Posicion en el eje Y del PJ
     int Lives = 3;              //Vidas del personaje principal
+    int Score = 0;              //Puntaje del personaje
 
 };
 #endif // MAINCHARACTER_H

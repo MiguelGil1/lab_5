@@ -59,3 +59,11 @@ int mainCharacter::getLives() const{
 void mainCharacter::setLives(int value){
     Lives = value;
 }
+
+int mainCharacter::getScore() const{
+    return Score;
+}
+
+void mainCharacter::setScore(int value){
+    Score = value;
+}

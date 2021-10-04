@@ -2,7 +2,8 @@
 #include "ui_mainwindow.h"
 
 #define PATH_WORLD "../lab_5_2/worlds/world.txt"
-
+static int PosX = 0;
+static int PosY = 0;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +33,8 @@ void MainWindow::loseLife(){
     if(Lives != 0){
         Lives -= 1;
         Time = 300;
+        PosX = 0;
+        PosY = 0;
         ui->Lives->display(Lives);
         ui->Timer->display(Time);
         PJ->setPositionXmainCharacter(0);
@@ -193,8 +196,7 @@ bool MainWindow::detectColisionWithBricks(){
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event){
-    static int PosX = 0;
-    static int PosY = 0;
+
     switch (event->key()) {
         case Qt::Key_A:{
             //Movimiento a la izquierda
@@ -281,17 +283,31 @@ void MainWindow::readWorld(){
     int contRow = 0;
     ifstream infile;
     infile.open(PATH_WORLD);
+    int contBriks = 0;
+
     while(!infile.eof()){
         infile >> line;
         for(int  i = 0; i < int(line.length()); i++){
             valor[0] = line[i];
             worldMatrix[contRow][i] = (stoi(valor));
+            if(stoi(valor) == 2){
+                contBriks += 1;
+            }
         }
         contRow++;
     }
     infile.close();
+
+    //Posicion inicial del primer bloque en los ejes X e Y
     int positionX = -30;
     int positionY = -30;
+
+    //Generando numero aleatorio para la puerta
+    srand(time(NULL));
+    int num = 1+rand()%(contBriks);
+    //Fin de generacio de numero aleatorio
+
+    contBriks = 0;
     for(int rows = 0; rows != 13; rows++){
         positionX = -30;
         for(int columns = 0; columns < 31; columns++){
@@ -302,14 +318,20 @@ void MainWindow::readWorld(){
                 mIron.push_back(hierro);
             }else if(worldMatrix[rows][columns] == 2){
                 //Se agregan los ladrillos
+                contBriks += 1;
+                if(contBriks == num){
+                    puerta = new door(positionX,positionY);
+                    scene->addItem(puerta);
+                }
                ladrillo = new bricks(positionX,positionY);
                scene->addItem(ladrillo);
-               mBricks.push_back(ladrillo);
+               mBricks.push_back(ladrillo);           
             }
             positionX += 30;
         }
         positionY += 30;
     }
+
 }
 
 MainWindow::~MainWindow(){

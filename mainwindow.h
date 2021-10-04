@@ -14,9 +14,14 @@
 #include "bomb.h"
 #include "bricks.h"
 #include "iron.h"
+#include "door.h"
 
 #include <vector>
 #include <list>
+#include <array>
+
+#include <stdlib.h>
+#include <time.h>
 
 #include <fstream>
 #include <iostream>
@@ -36,7 +41,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-
     void  OnTimeOut(); //Metodo que realiza el decremento de del tiempo
 protected:
     void keyPressEvent(QKeyEvent *event); //Metodo que detecta que tecla fue presionada
@@ -46,28 +50,33 @@ protected:
     bool detectColision();                //Evalua colisiones con todo el mundo en general
     bool detectColisionWithIron();        //Detecta coliiones conbloques de Hierro
     bool detectColisionWithBricks();      //Detecta colisiones con los ladrillos
-    //bool detectColisionWithEnemies();     //Detecta colisiones con enemigos
+    //bool detectColisionWithEnemies();   //Detecta colisiones con enemigos
 private:
     Ui::MainWindow *ui;
 
     QGraphicsScene *scene;//Declaracion de la escena
     QTimer *timer;        //Timer dpara decrementar cada 1 segundo el tiempo
 
-    mainCharacter *PJ;           //Jugador Principal
-    bomb *bomba;                 //Bomba
-    bomb *bomba1;
-    bomb *bomba2;
-    bomb *bomba3;
-    bomb *bomba4;
-    bricks *ladrillo;            //Ladrillo
-    iron *hierro;                //Hierro
-    list <bricks *> mBricks;     //Lista de tipo objetos ladrillo
-    vector <iron *> mIron;       //Lista de objetos tipo Iron
+    //          Declaracion de objetos de la escena             //
+
+    mainCharacter *PJ;        //Jugador Principal
+    bomb *bomba;              //Bomba - Epicentro
+    bomb *bomba1;             //Bomba 1
+    bomb *bomba2;             //Bomba 2
+    bomb *bomba3;             //Bomba 3
+    bomb *bomba4;             //Bomba 4
+    door *puerta;             //Puerta
+    bricks *ladrillo;         //Ladrillo
+    iron *hierro;             //Hierro
+    list <bricks *> mBricks;  //Lista de tipo objetos ladrillo
+    vector <iron *> mIron;    //Lista de objetos tipo Iron
+
+    //Fin declaracion de objetos de la escena                  //
 
 
-    int Time = 300;
-    bool activeBomb = false;
+    int Time = 300;          //Tiempo para cada vida
+    bool activeBomb = false; //Boolenao que contiene falso si no hay bpbas activas en el mapa, de lo contrario almacena true
 
-    array <array<int,31>,13> worldMatrix;
+    array <array<int,31>,13> worldMatrix; //Arreglo de aareglos que contiene el mapa leido desde el .txt
 };
 #endif // MAINWINDOW_H

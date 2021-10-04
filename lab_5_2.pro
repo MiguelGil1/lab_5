@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     bomb.cpp \
     bricks.cpp \
+    door.cpp \
     iron.cpp \
     main.cpp \
     mainCharacter.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 HEADERS += \
     bomb.h \
     bricks.h \
+    door.h \
     iron.h \
     mainCharacter.h \
     mainwindow.h

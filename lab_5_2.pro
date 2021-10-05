@@ -12,18 +12,22 @@ SOURCES += \
     bomb.cpp \
     bricks.cpp \
     door.cpp \
+    horizontalenemies.cpp \
     iron.cpp \
     main.cpp \
     mainCharacter.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    verticalenemies.cpp
 
 HEADERS += \
     bomb.h \
     bricks.h \
     door.h \
+    horizontalenemies.h \
     iron.h \
     mainCharacter.h \
-    mainwindow.h
+    mainwindow.h \
+    verticalenemies.h
 
 FORMS += \
     mainwindow.ui

@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     PJ = new mainCharacter(0,0,30,30);
     scene->addItem(PJ);
     readWorld();
+    ui->graphicsView->setSceneRect(-30,-30,480,390);
 
     //Se inicia el TIMER//
     timer = new QTimer(this);
@@ -42,6 +43,8 @@ void MainWindow::loseLife(){
         PJ->setPositionYmainCharacter(0);
         PJ->setPos(0,0);
         PJ->setLives(Lives);
+        ui->graphicsView->setSceneRect(-30,-30,480,390);
+        XRect = -30;
     }else{
         timer->stop();
         timer->disconnect();
@@ -400,8 +403,7 @@ void MainWindow::moveV_Enemy(){
     }
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event){
-
+void MainWindow::keyPressEvent(QKeyEvent *event){ 
     switch (event->key()) {
         case Qt::Key_A:{
             //Movimiento a la izquierda
@@ -417,6 +419,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
                 PosX += 30;
                 PJ->setPositionXmainCharacter(posX);
                 PJ->changePosition();
+            }else{
+                /*if(PosX > 240 and PosX < 690){
+                    XRect -= 30;
+                    ui->graphicsView->setSceneRect(XRect,-30,480,390);
+                }*/
+                if(PosX > 240){
+                    XRect -= 30;
+                    ui->graphicsView->setSceneRect(XRect,-30,480,390);
+                }
             }
             break;
         }
@@ -451,6 +462,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
                 PosX -= 30;
                 PJ->setPositionXmainCharacter(posX);
                 PJ->changePosition();
+            }else{
+                /*if(PosX > 240 and PosX > 690){
+                    XRect += 30;
+                    ui->graphicsView->setSceneRect(XRect,-30,480,390);
+                }*/
+                if(PosX > 240){
+                    XRect += 30;
+                    ui->graphicsView->setSceneRect(XRect,-30,480,390);
+                }
             }
             break;
         }

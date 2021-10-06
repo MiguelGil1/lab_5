@@ -85,6 +85,7 @@ private:
 
     int Time = 300;          //Tiempo para cada vida
     bool activeBomb = false; //Boolenao que contiene falso si no hay bpbas activas en el mapa, de lo contrario almacena true
+    int XRect = -30;
 
     array <array<int,31>,13> worldMatrix; //Arreglo de aareglos que contiene el mapa leido desde el .txt
 };

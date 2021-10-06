@@ -54,6 +54,8 @@ protected:
     bool detectColisionWithIron();        //Detecta coliiones conbloques de Hierro
     bool detectColisionWithBricks();      //Detecta colisiones con los ladrillos
     bool detectColisionWithEnemies();     //Detecta colisiones con enemigos
+    void moveH_Enemy();
+    void moveV_Enemy();
 private:
     Ui::MainWindow *ui;
 

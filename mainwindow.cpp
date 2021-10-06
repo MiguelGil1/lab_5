@@ -10,14 +10,14 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    scene = new QGraphicsScene();
+    scene = new QGraphicsScene(this);
 
     PJ = new mainCharacter(0,0,30,30);
     scene->addItem(PJ);
     readWorld();
 
     //Se inicia el TIMER//
-    timer = new QTimer();
+    timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(OnTimeOut()));
     timer->start(1000);
 
@@ -46,13 +46,15 @@ void MainWindow::loseLife(){
         timer->stop();
         timer->disconnect();
         scene->addText("Game Over!");
-    }
+        //this->~MainWindow();
+    }    
 }
 
 void MainWindow::win(){
     timer->stop();
     timer->disconnect();
     scene->addText("Victory!");
+    //this->~MainWindow();
 }
 
 void MainWindow::explosion(){
@@ -116,24 +118,28 @@ void MainWindow::explosion(){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
+            //mH_Enemies.erase(i);
             mH_Enemies.remove(*i);
             Score += 200;
         }else if(bomba2->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
+            //mH_Enemies.erase(i);
             mH_Enemies.remove(*i);
             Score += 200;
         }else if(bomba3->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
+            //mH_Enemies.erase(i);
             mH_Enemies.remove(*i);
             Score += 200;
         }else if(bomba4->collidesWithItem(*i)){
             cout << "Ladrillo eliminado: " << *i << endl;
             scene->removeItem(*i);
             delete *i;
+            //mH_Enemies.erase(i);
             mH_Enemies.remove(*i);
             Score += 200;
         }
@@ -206,6 +212,8 @@ void MainWindow::OnTimeOut(){
         loseLife();
     }else{
       ui->Timer->display(Time);
+      moveH_Enemy();
+      moveV_Enemy();
     }
     if(activeBomb == true){
         int contador = bomba->getContador();
@@ -251,6 +259,7 @@ bool MainWindow::detectColisionWithBricks(){
     }
     return false;
 }
+
 bool MainWindow::detectColisionWithEnemies(){
     for(auto i = mH_Enemies.begin(); i != mH_Enemies.end(); i++){
         if(PJ->collidesWithItem(*i)){
@@ -265,6 +274,130 @@ bool MainWindow::detectColisionWithEnemies(){
         }
     }
     return false;
+}
+
+void MainWindow::moveH_Enemy(){
+    for(auto enemy = mH_Enemies.begin(); enemy != mH_Enemies.end(); enemy++){
+        int mov = (*enemy)->getMovimiento();
+        int X = (*enemy)->getPosX();
+        int Y = (*enemy)->getPosY();
+        int OrigialX = (*enemy)->getOriginalX();
+        int OrigialY = (*enemy)->getOriginalY();
+        if(mov == 1){
+            //Se mueve hacia la derecha
+            X += 5;
+        }else if(mov == 2){
+            //Se mueve hacia la izquierda
+            X -= 5;
+        }
+        if(Y == 0){
+            (*enemy)->setPos(X-OrigialX,Y);
+        }else{
+            (*enemy)->setPos(X-OrigialX,Y-OrigialY);
+        }
+
+        bool brick = false;
+        bool iron  = false;
+
+        //Deteccion de colisiones con ladrillos
+        for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+            if((*enemy)->collidesWithItem(*i)){
+                brick = true;
+                //break;
+            }
+        }
+        //Fin deteccion de colisiones con ladrillos
+
+        //Deteccion de colisiones con ladrillos
+        for(auto i = mIron.begin(); i != mIron.end(); i++){
+            if((*enemy)->collidesWithItem(*i)){
+                iron = true;
+                //break;
+            }
+        }
+        //Fin deteccion de colisiones con ladrillos
+
+        if(brick == true || iron == true){
+            //Hubo colision e el movimiento
+            if(mov == 1){
+                //Se mueve hacia arriba
+                X -= 5;
+                (*enemy)->setMovimiento(2);
+            }else if(mov == 2){
+                //Se mueve hacia abajo
+                X += 5;
+                (*enemy)->setMovimiento(1);
+            }
+            if(Y == 0){
+                (*enemy)->setPos(X-OrigialX,Y);
+            }else{
+                (*enemy)->setPos(X-OrigialX,Y-OrigialY);
+            }
+        }
+        (*enemy)->setPosX(X);
+    }
+}
+
+void MainWindow::moveV_Enemy(){
+    for(auto enemy = mV_Enemies.begin(); enemy != mV_Enemies.end(); enemy++){
+        int mov = (*enemy)->getMovimiento();
+        int X = (*enemy)->getPosX();
+        int Y = (*enemy)->getPosY();
+        int OrigialX = (*enemy)->getOriginalX();
+        int OrigialY = (*enemy)->getOriginalY();
+        if(mov == 1){
+            //Se mueve hacia arriba
+            Y -= 5;
+        }else if(mov == 2){
+            //Se mueve hacia abajo
+            Y += 5;
+        }
+        if(X == 0){
+            (*enemy)->setPos(X,Y-OrigialY);
+        }else{
+            (*enemy)->setPos(X-OrigialX,Y-OrigialY);
+        }
+
+        bool brick = false;
+        bool iron  = false;
+
+        //Deteccion de colisiones con ladrillos
+        for(auto i = mBricks.begin(); i != mBricks.end(); i++){
+            if((*enemy)->collidesWithItem(*i)){
+                brick = true;
+                //break;
+            }
+        }
+        //Fin deteccion de colisiones con ladrillos
+
+        //Deteccion de colisiones con ladrillos
+        for(auto i = mIron.begin(); i != mIron.end(); i++){
+            if((*enemy)->collidesWithItem(*i)){
+                iron = true;
+                //break;
+            }
+        }
+        //Fin deteccion de colisiones con ladrillos
+
+        if(brick == true || iron == true){
+            //Hubo colision e el movimiento
+            if(mov == 1){
+                //Se mueve hacia arriba
+                Y += 5;
+                (*enemy)->setMovimiento(2);
+            }else if(mov == 2){
+                //Se mueve hacia abajo
+                Y -= 5;
+                (*enemy)->setMovimiento(1);
+            }
+            if(X == 0){
+                (*enemy)->setPos(X,Y-OrigialY);
+            }else{
+                (*enemy)->setPos(X-OrigialX,Y-OrigialY);
+            }
+        }
+        (*enemy)->setPosY(Y);
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event){
@@ -399,21 +532,20 @@ void MainWindow::readWorld(){
                scene->addItem(ladrillo);
                mBricks.push_back(ladrillo);           
             }else if(worldMatrix[rows][columns] == 3){
-                //Se agregan enemigos con movimiento horizontal
-                hEnemy = new horizontalEnemies(positionX,positionY);
-                scene->addItem(hEnemy);
-                mH_Enemies.push_back(hEnemy);
-            }else if(worldMatrix[rows][columns] == 3){
                 //Se agregan enemigos con movimiento vertical
                 vEnemy = new verticalEnemies(positionX,positionY);
                 scene->addItem(vEnemy);
                 mV_Enemies.push_back(vEnemy);
+            }else if(worldMatrix[rows][columns] == 4){
+                //Se agregan enemigos con movimiento horizontal
+                hEnemy = new horizontalEnemies(positionX,positionY);
+                scene->addItem(hEnemy);
+                mH_Enemies.push_back(hEnemy);
             }
             positionX += 30;
         }
         positionY += 30;
     }
-
 }
 
 MainWindow::~MainWindow(){
@@ -450,7 +582,5 @@ MainWindow::~MainWindow(){
     scene->removeItem(puerta);//Se elimina la puerta
     delete puerta;
 
-    scene->destroyed();
-    delete scene;
     delete ui;
 }
